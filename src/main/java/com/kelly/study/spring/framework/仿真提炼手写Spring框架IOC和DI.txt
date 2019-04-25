@@ -1,0 +1,56 @@
+一、环境搭建
+1、application.properties的配置：用于扫描包下的所有类（scanPackage）
+2、pom.xml配置 ：配置本次项目所依赖的jar
+3、web.xml配置：配置servlet的启动类KYDispatcherServlet(servlet和servlet-mapping)
+4、创建KYDispatcherServlet extends HttpServlet,重写init()、doPost 、doGet
+
+二、IOC 顶层结构设计
+1、annotation 模块：自定义注解模块
+包括5个：KYAutowired-用于标识成员变量    KYRequestMapping -标注请求的映射
+ KYController-用于标识controller类  KYRequestParam-标注请求的参数   KYService-标注Service功能类
+2、core模块（顶层接口）
+（1） KYFactoryBean
+（2） KYBeanFactory :单例工厂容器，可以根据beanName和beanClass取得bean
+3、beans模块（配置封装）
+（1）KYBeanDefinition: 用来储存配置文件的信息（保存内存中的配置）
+（2）KYBeanWrapper : 包装Bean
+4、context 模块（IOC容器）
+（1）KYAbstractApplicationContext: IOC容器实现的顶层设计，内有refresh()
+（2）KYDefaultListableBeanFactory: extends KYAbstractApplicationContext，定义beanDefinitionMap
+（3）KYApplicationContext : extends KYDefaultListableBeanFactory implements KYBeanFactory
+  定义 ioc 容器，
+  重写refresh(): 定位配置信息——>加载配置信息，将Bean封装为BeanDefinition——>注册,把配置信息注册到容器中——>非延迟加载的类，初始化
+(4)KYBeanDefinitionReader : 对配置文件进行查找，读取，解析
+(5)KYApplicationContextAware: 将IOC容器注入到目标类的接口设计，只要实现了该接口，则将ioc注入到目标类
+
+三、完成DI依赖注入功能（入口是getBean()）
+（1）完善getBean()方法：
+ a.获取beanDefinition信息，反射生成一个实例，
+ b.beanPostProcessor调用实例初始化前后的动作
+ c.注入
+（2）GPBeanPostProcessor：提供bean初始化前后的回调方法
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
